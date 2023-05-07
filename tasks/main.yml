@@ -1,0 +1,19 @@
+---    
+- name: Create directory layout
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"    
+  with_items: "{{ directories }}"
+  when: item | length > 0  
+  become: true
+  remote_user: "{{ sudo_user }}"
+
+- include_tasks: 
+    file: app.yml
+     
+
+- include_tasks: 
+    file: tenants.yml
+
