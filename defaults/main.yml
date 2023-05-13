@@ -1,0 +1,63 @@
+---
+app_version: 0.0.5
+app_snapshot: "-SNAPSHOT"
+
+app_src: "{{ app_version }}/tailoringexpert-bootapp-{{ app_version }}{{app_snapshot}}-exec.jar"
+app_serverport: 8443
+app_logconfig_file: log4j2.xml
+
+
+app_home: "/app"
+app_lib: "{{ app_home }}/lib"
+app_service: "{{ app_home }}/service"
+app_config: "{{ app_home }}/config"
+app_log: "{{ app_home }}/log"
+app_template: "{{ app_home }}/templates"
+app_db: "{{ app_home }}/db"
+
+
+directories: [ 
+  "{{ app_home }}", 
+  "{{ app_lib }}", 
+  "{{ app_service }}", 
+  "{{ app_config }}",
+  "{{ app_log }}",
+  "{{ app_template }}",
+  "{{ app_db }}"
+]  
+  
+app:
+  home: "{{ app_home }}"
+  version: "{{ app_version }}"
+  serverport: "{{ app_serverport }}"  
+  src: "{{ app_src }}"
+  config: "{{ app_config }}"
+  lib:  "{{ app_lib }}"
+  db: "{{ app_db }}"
+  service: "{{ app_service }}"
+  template: "{{ app_template }}"
+  password: "{{ app_password }}"
+  remote_src: no
+  log: "{{ app_log }}"
+  logconfig_file: "{{ app_logconfig_file }}"
+  ssl:
+    enabled: true
+    src: "{{ inventory_hostname | lower}}/{{ server_name }}.p12"
+    type: PKCS12 
+    store: "{{ app_lib }}/{{ server_name }}.p12"
+    password: Tailoring2022!
+    alias: tailoringexpert
+    protocol: TLS
+    enabledProctols: TLSv1.2  
+  libs:
+    - src: "{{ app_version }}/lib/mariadb-java-client-3.0.9.jar"
+      remote_src: no
+      force: false
+    - src: "{{ app_version }}/lib/tailoringexpert-security-{{ app_version }}{{app_snapshot}}.jar"
+      remote_src: no
+      force: true    
+  datasource: "{{ plattform.datasource }}"  
+
+
+tenants: []  
+service_dir: /etc/systemd/system

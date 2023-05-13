@@ -1,0 +1,98 @@
+---
+- name: Install plattform app
+  copy:
+    src: "{{ app.src }}"
+    dest: "{{ app.home }}"
+    remote_src: "{{ app.remote_src }}"
+ 
+- name: Symlink current app version
+  file:
+    src: "{{ app.home }}/{{ app.src | basename }}"
+    dest:  "{{ app.home }}/tailoringexpert-exec.jar"
+    state: link         
+              
+- name: Install SSL certificate
+  copy:
+    src: "{{ app.ssl.src }}"
+    dest:  "{{ app.lib }}"
+    remote_src: no   
+    
+- name: Copy plattform required libs
+  copy:
+    src: "{{ item.src }}"
+    dest:  "{{ app.lib }}"
+    remote_src: "{{ item.remote_src }}"
+  loop: "{{ app.libs }}"  
+  
+- name: Create application.properties
+  template:
+    src: application.properties.j2
+    dest:  "{{ app.config }}/application.properties"
+    mode: 0640    
+  
+- name: Create logging config
+  template:
+    src: log4j2.xml.j2
+    dest:  "{{ app.config }}/log4j2.xml"
+    mode: 0640
+           
+- name: Create startscript
+  template:
+    src: start.sh.j2
+    dest:  "{{ app.service }}/start.sh"
+    mode: 0755
+
+- name: Print service facts
+  ansible.builtin.debug:
+    msg: "{{ansible_service_mgr}}"
+
+- block:
+  - name: Create service
+    template:
+      src: tailoringexpert.service.j2
+      dest: "{{ app.service }}/tailoringexpert.service"
+      mode: 0750
+  
+  - name: Symlink service
+    file: 
+      src: "{{ app.service }}/tailoringexpert.service"
+      dest:  "/etc/systemd/system/tailoringexpert.service"
+      state: link 
+      mode: 0750
+    become: true
+    remote_user: "{{ sudo_user }}"
+    ignore_errors: true
+  
+  when:  (ansible_service_mgr  | lower ) == "systemd"
+          
+
+#- block:
+#  - name: Create service
+#    template:
+#      src: tailoringexpert.init.j2
+#      dest: "{{ app.service }}/tailoringexpert"
+#      mode: 0750
+  
+#  - name: Symlink service
+#    file: 
+#      src: "{{ app.service }}/tailoringexpert"
+#      dest:  "/etc/init.d/tailoringexpert"
+#      state: link 
+#      mode: 0750
+#    become: true  
+#  when:  (ansible_service_mgr  | lower ) == "systemv"
+
+      
+- name: Enable service 
+  service:
+    name: tailoringexpert
+    enabled: yes  
+    daemon_reload: yes
+  become: true  
+  remote_user: "{{ sudo_user }}"
+  notify: restart app
+
+
+- meta: flush_handlers
+  tags: always
+ 

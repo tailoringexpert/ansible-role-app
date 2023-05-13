@@ -1,0 +1,19 @@
+---       
+- name: Create db.properties
+  include_tasks: dbproperties.yml
+  loop_control:
+    loop_var: tenant  
+  loop: "{{ tenants }}"
+        
+- name: Install tenant libs
+  unarchive:
+    src: "{{ item.file.src }}"
+    dest: "{{ app.home }}"
+    remote_src: "{{ item.file.remote_src }}"
+  when: item.file is defined
+  loop: "{{ tenants }}"   
+  notify: restart app
+
+
+- meta: flush_handlers
+  tags: always   
