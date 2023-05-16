@@ -5,7 +5,7 @@
     state: directory
     owner: "{{ user }}"
     group: "{{ group }}"    
-  with_items: "{{ directories }}"
+  with_items: "{{ app_directories }}"
   when: item | length > 0  
   become: true
   remote_user: "{{ sudo_user }}"
@@ -13,7 +13,6 @@
 - include_tasks: 
     file: app.yml
      
-
 - include_tasks: 
     file: tenants.yml
 

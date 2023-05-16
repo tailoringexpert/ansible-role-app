@@ -1,0 +1,27 @@
+---  
+app:
+  home: "{{ app_home }}"
+  version: "{{ app_version }}"
+  serverport: "{{ app_serverport }}"  
+  src: "{{ app_src }}"
+  config: "{{ app_config }}"
+  lib:  "{{ app_lib }}"
+  db: "{{ app_db }}"
+  service: "{{ app_service }}"
+  template: "{{ app_template }}"
+  password: "{{ app_password }}"
+  remote_src: no
+  log: "{{ app_log }}"
+  logconfig_file: "{{ app_logconfig_file }}"
+  ssl:
+    enabled: true
+    src: "{{ inventory_hostname | lower}}/{{ server_name }}.p12"
+    type: PKCS12 
+    store: "{{ app_lib }}/{{ server_name }}.p12"
+    password: "{{app_ssl_password}}"
+    alias: "{{ app_ssl_alias }}"
+    protocol: TLS
+    enabledProctols: TLSv1.2  
+  libs: "{{ app_libs }}"
+  datasource: "{{ plattform.datasource }}"  
+
