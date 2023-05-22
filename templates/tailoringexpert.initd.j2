@@ -91,7 +91,10 @@ stop)
 ;;
 
 restart)
-    $0 stop
+	if [ -f $PID_FILE ]; then
+	    echo "$PID_FILE exists."
+		$0 stop
+	fi
     $0 start
 ;;
 

@@ -64,35 +64,37 @@
     ignore_errors: true
   
   when:  (ansible_service_mgr  | lower ) == "systemd"
-          
 
-#- block:
-#  - name: Create service
-#    template:
-#      src: tailoringexpert.init.j2
-#      dest: "{{ app.service }}/tailoringexpert"
-#      mode: 0750
+- block:
+  - name: Create service
+    template:
+      src: tailoringexpert.initd.j2
+      dest: "{{ app.service }}/tailoringexpert.service"
+      mode: 0750
   
-#  - name: Symlink service
-#    file: 
-#      src: "{{ app.service }}/tailoringexpert"
-#      dest:  "/etc/init.d/tailoringexpert"
-#      state: link 
-#      mode: 0750
-#    become: true  
-#  when:  (ansible_service_mgr  | lower ) == "systemv"
+  - name: Symlink service
+    file: 
+      src: "{{ app.service }}/tailoringexpert.service"
+      dest:  "/etc/init.d//tailoringexpert"
+      state: link 
+      mode: 0750
+    become: true
+    remote_user: "{{ sudo_user }}"
+    ignore_errors: true
+  
+  when:  (ansible_service_mgr  | lower ) == "sysvinit"          
 
-      
+     
 - name: Enable service 
   service:
     name: tailoringexpert
     enabled: yes  
-    daemon_reload: yes
+    state: started
   become: true  
   remote_user: "{{ sudo_user }}"
-  notify: restart app
+  notify: wait for app
 
 
-- meta: flush_handlers
-  tags: always
+#- meta: flush_handlers
+#  tags: always
  

@@ -3,6 +3,7 @@
   service: 
     name: tailoringexpert
     state: restarted
+    enabled: true
   become: true
   remote_user: "{{ sudo_user }}"
   notify: wait for app
