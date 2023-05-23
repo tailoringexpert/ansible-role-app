@@ -1,0 +1,15 @@
+---
+- include_tasks: 
+    file: "service-{{ ansible_service_mgr  | lower }}.yml"
+        
+- name: Enable service 
+  service:
+    name: tailoringexpert
+    enabled: yes  
+    state: started
+  become: true  
+  remote_user: "{{ sudo_user }}"
+  notify: wait for app
+  
+- meta: flush_handlers
+  tags: always  

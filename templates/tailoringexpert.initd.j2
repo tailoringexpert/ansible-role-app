@@ -76,6 +76,7 @@ stop)
         PID=`cat $PID_FILE`
         if [ -z "`ps axf | grep -w ${PID} | grep -v grep`" ]; then
             echoRed "Not running (process dead but pidfile exists)"
+			rm -f $PID_FILE
             exit 1
         else
             PID=`cat $PID_FILE`
@@ -86,7 +87,8 @@ stop)
         fi
     else
         echoRed "Not running (pid not found)"
-        exit 3
+        #exit 3
+		exit 0
     fi
 ;;
 

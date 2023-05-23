@@ -42,59 +42,6 @@
     dest:  "{{ app.service }}/start.sh"
     mode: 0755
 
-- name: Print service facts
-  ansible.builtin.debug:
-    msg: "{{ansible_service_mgr}}"
-
-- block:
-  - name: Create service
-    template:
-      src: tailoringexpert.service.j2
-      dest: "{{ app.service }}/tailoringexpert.service"
-      mode: 0750
-  
-  - name: Symlink service
-    file: 
-      src: "{{ app.service }}/tailoringexpert.service"
-      dest:  "/etc/systemd/system/tailoringexpert.service"
-      state: link 
-      mode: 0750
-    become: true
-    remote_user: "{{ sudo_user }}"
-    ignore_errors: true
-  
-  when:  (ansible_service_mgr  | lower ) == "systemd"
-
-- block:
-  - name: Create service
-    template:
-      src: tailoringexpert.initd.j2
-      dest: "{{ app.service }}/tailoringexpert.service"
-      mode: 0750
-  
-  - name: Symlink service
-    file: 
-      src: "{{ app.service }}/tailoringexpert.service"
-      dest:  "/etc/init.d//tailoringexpert"
-      state: link 
-      mode: 0750
-    become: true
-    remote_user: "{{ sudo_user }}"
-    ignore_errors: true
-  
-  when:  (ansible_service_mgr  | lower ) == "sysvinit"          
-
-     
-- name: Enable service 
-  service:
-    name: tailoringexpert
-    enabled: yes  
-    state: started
-  become: true  
-  remote_user: "{{ sudo_user }}"
-  notify: wait for app
-
-
-#- meta: flush_handlers
-#  tags: always
+- include_tasks: 
+    file: service.yml
  

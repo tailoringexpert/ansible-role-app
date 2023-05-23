@@ -1,0 +1,17 @@
+---
+- name: Create service
+  template:
+    src: tailoringexpert.service.j2
+    dest: "{{ app.service }}/tailoringexpert.service"
+    mode: 0750
+  
+- name: Symlink service
+  file: 
+    src: "{{ app.service }}/tailoringexpert.service"
+    dest:  "/etc/systemd/system/tailoringexpert.service"
+    state: link 
+    mode: 0750
+  become: true
+  remote_user: "{{ sudo_user }}"
+  ignore_errors: true
+  notify: wait for app
